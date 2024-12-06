@@ -10,18 +10,16 @@ int dy[] = {0, 1, 0, -1};
 
 void simulation(int x, int y, int d) {
 	A[x][y] = 'X';
-	int nx = x + dx[d];
-	int ny = y + dy[d];
-	if (0 > nx || nx >= A.size() || 0 > ny || ny >= A[0].size())
-		return;
-	while (A[nx][ny] == '#') {
-		d = (d + 1) % 4;
-		nx = x + dx[d];
-		ny = y + dy[d];
-		if (0 > nx || nx >= A.size() || 0 > ny || ny >= A[0].size())
-			return;
+	int nx, ny;
+	for (int i = 0; i < 4; i++) {
+		int dir = (d + i) % 4;
+		nx = x + dx[dir];
+		ny = y + dy[dir];
+		if (0 > nx || nx >= A.size() || 0 > ny || ny >= A[0].size()) return;
+		if (A[nx][ny] == '#') continue;
+		simulation(nx, ny, dir);
+		break;
 	}
-	simulation(nx, ny, d);
 }
 
 int main(void) {

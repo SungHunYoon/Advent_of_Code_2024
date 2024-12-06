@@ -5,27 +5,26 @@
 using namespace std;
 
 vector<vector<char>> A;
-vector<vector<char>> B;
 bool V[4][130][130];
 int dx[] = {-1, 0, 1, 0};
 int dy[] = {0, 1, 0, -1};
 
 bool simulation(int x, int y, int d) {
 	if (V[d][x][y]) return true;
-	B[x][y] = 'X';
+	bool ret = false;
 	V[d][x][y] = true;
-	int nx = x + dx[d];
-	int ny = y + dy[d];
-	if (0 > nx || nx >= B.size() || 0 > ny || ny >= B[0].size())
-		return false;
-	while (B[nx][ny] == '#') {
-		d = (d + 1) % 4;
-		nx = x + dx[d];
-		ny = y + dy[d];
-		if (0 > nx || nx >= B.size() || 0 > ny || ny >= B[0].size())
-			return false;
+	int nx, ny;
+	for (int i = 0; i < 4; i++) {
+		int dir = (d + i) % 4;
+		nx = x + dx[dir];
+		ny = y + dy[dir];
+		if (0 > nx || nx >= A.size() || 0 > ny || ny >= A[0].size()) break;
+		if (A[nx][ny] == '#') continue;
+		ret = simulation(nx, ny, dir);
+		break;
 	}
-	return simulation(nx, ny, d);
+	V[d][x][y] = false;
+	return ret;
 }
 
 int main(void) {
@@ -52,11 +51,10 @@ int main(void) {
 	for (int i = 0; i < A.size(); i++) {
 		for (int j = 0; j < A[i].size(); j++) {
 			if (A[i][j] == '^' || A[i][j] == '#') continue;
-			fill(&V[0][0][0], &V[4][0][0], false);
-			B = A;
-			B[i][j] = '#';
+			A[i][j] = '#';
 			if (simulation(sX, sY, 0))
 				answer++;
+			A[i][j] = '.';
 		}
 	}
 	cout << answer << '\n';
